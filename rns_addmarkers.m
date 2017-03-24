@@ -1,4 +1,4 @@
-function figH = rns_addmarkers(figH,Events,c)
+function [figH,therapy_times] = rns_addmarkers(figH,Events,c)
 
 if ~exist('c','var')
     c = [0.65,0.65,0.65];
@@ -30,8 +30,9 @@ setappdata(figH,'StartEpisode',markers)
 
 % Mark Therapies delivered
 markers = cell(cfg.ntherapies,1);
+therapy_times = cell2mat({Events(cfg.idxtherapies(:)).start_time});
 for i = 1:cfg.ntherapies
-    markers{i}=plot(Events(cfg.idxtherapies(i)).start_time*[1 1],ylim,...
+    markers{i}=plot(therapy_times(i)*[1 1],ylim,...
         'color',c,'linestyle','--','linewidth',1);
 end
 setappdata(figH,'TherapyMarkers',markers)
