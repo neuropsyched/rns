@@ -1,10 +1,17 @@
 % clear; clc; close all
+clear; clc; close all
 
-PtId='GN765937';
-load([PtId '_datastruct.mat'])
-load([PtId '_info.mat'])
-% str = ['select * from rns_dm.data d where d.pt_id = ''' PtId ''''];
-% info = rns_accessmssql_server(str);
+dp='/Users/arikappel/Documents/MATLAB/Richardsonlab/RNS'; %datapath
+mp='/Users/arikappel/Documents/MATLAB/Richardsonlab/RNS/rns'; %matlabpath
+
+% 1. get rns datastruct and info
+patients = {'DD762713','CM723654','GN765937','DW728352'};
+PtId=patients{3};
+
+load(fullfile(dp,PtId,[PtId '_datastruct.mat']))
+load(fullfile(dp,PtId,[PtId '_info.mat']))
+
+[data,rec_length] = rns_datastruct2array(datastruct);
 
 % 2. Choose Trials
 Idx{1} = find(~cellfun(@isempty,strfind({info.trigger_reason},'SCHEDULED'))==1);
