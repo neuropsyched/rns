@@ -33,24 +33,66 @@ for rec=1:length(datastruct);
         [sortedges,b]=sort(edges);
         sortedgeid=edgeid(b);
         goodstarts=find([diff(sortedgeid)==1;0]);
-        subcounter=1;
+        %subcounter=1;
         for n=1:length(goodstarts)
             tmp=[sortedges(goodstarts(n)):sortedges(goodstarts(n)+1)];
-            if all(diff(stims(tmp))<5)
-                traintimes{subcounter}=stims(tmp);
-                subcounter=subcounter+1;
+            if all(diff(stims(tmp))<5) & all(diff(stims(tmp))>1)
+                traintimes=stims(tmp);
+                data(counter).recid = rec;
+                data(counter).tsraw = datastruct(rec).Data;
+                data(counter).traintimes = traintimes;
+                counter = counter+1;
             end
-        end
-        if exist('traintimes','var')
-            data(counter).recid = rec;
-            data(counter).tsraw = datastruct(rec).Data;
-            data(counter).traintimes = traintimes;
-            counter = counter+1;
         end
     end
     clear traintimes
 end
 
+% check hist of interval times
+% tmp = arrayfun(@(x) cellfun(@(y) diff(y),x.traintimes,'uni',0),data,'uni',0);
+% tmp = cellfun(@(x) cat(1,x{:}),tmp,'uni',0);
+% tmp = cat(1,tmp{:});
+
+interwin = 1.5;
+% if any(tmp<interwin)
+%     error('check interwindows')
+% end
+
+for i = 1:length(data)
+    tstart = data(i).traintimes(1)*srate;
+    tend = data(i).traintimes(end)*srate;
+    data(i).tsprewin = data(i).tsraw(:,tstart-prewin*srate:tstart);
+    data(i).tspostwin = data(i).tsraw(:,tend:tend+postwin*srate);
+    if length(data(i).traintimes)>1
+        for k = 1:length(data(i).traintimes)-1
+            tstart = floor(data(i).traintimes(k)*srate);
+            data(i).tsinterwin{k} = data(i).tsraw(tstart:floor(tstart+interwin*srate));
+        end
+    end
+end
+
+% for i = 1:length(data)
+%     for j = 1:length(data(i).traintimes)
+%         tstart = data(i).traintimes{j}(1)*srate;
+%         tend = data(i).traintimes{j}(end)*srate;
+%         data(i).tsprewin{j} = data(i).tsraw(:,tstart-prewin*srate:tstart);
+%         data(i).tspostwin{j} = data(i).tsraw(:,tend:tend+postwin*srate);
+%         if length(data(i).traintimes{j})>1
+%             for k = 1:length(data(i).traintimes{j})-1
+%                 tstart = floor(data(i).traintimes{j}(k)*srate);
+%                 data(i).tsinterwin{j}{k} = data(i).tsraw(tstart:floor(tstart+interwin*srate));
+%             end
+%         end
+%     end
+% end
+
+% find(arrayfun(@(x) length(x.traintimes),data)==2)
+
+%% 
+postll=arrayfun(@(x) mean(abs(diff(x.tspostwin'))),data,'uni',0);
+postll=cat(1,postll{:});
 
 
 
+%
+end
