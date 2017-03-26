@@ -87,12 +87,5 @@ end
 % end
 
 % find(arrayfun(@(x) length(x.traintimes),data)==2)
-
-%% 
-postll=arrayfun(@(x) mean(abs(diff(x.tspostwin'))),data,'uni',0);
-postll=cat(1,postll{:});
-
-
-
 %
 end
